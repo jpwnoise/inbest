@@ -1,7 +1,8 @@
 import React from 'react';
+import './Animations.sass'
 
 const SpaceXLogo: React.FC = () => (
-    <svg style={{maxWidth:'600px'}} version="1.1" x="0px" y="0px" viewBox="0 0 400 50" aria-hidden="true">
+    <svg className='combined-animation' style={{maxWidth:'600px'}} version="1.1" x="0px" y="0px" viewBox="0 0 400 50" aria-hidden="true">
         <title>SpaceX Logo</title>
         <g className="letter_s">
             <path className="fill-white" d="M37.5,30.5H10.9v-6.6h34.3c-0.9-2.8-3.8-5.4-8.9-5.4H11.4c-5.7,0-9,2.1-9,6.7v4.9c0,4,3.4,6.3,8.4,6.3h26.9v7H1.5

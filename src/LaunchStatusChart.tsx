@@ -1,6 +1,7 @@
 import React, { SetStateAction, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import Select, { ActionMeta, SingleValue } from 'react-select';
+import './Animations.sass'
 
 
 interface LaunchStatusChartProps {
@@ -16,7 +17,7 @@ const LaunchStatusChart: React.FC<LaunchStatusChartProps> = ({ launches }) => {
 
   // Contar lanzamientos fallidos
   const countFailedLaunches = () => {
-    console.log("contando lanzamientos fallidos");
+    //console.log("contando lanzamientos fallidos");
     return launches.reduce((count, launch) => {
       //console.log(launch.success);
       return !launch.success ? count + 1 : count
@@ -65,7 +66,7 @@ const LaunchStatusChart: React.FC<LaunchStatusChartProps> = ({ launches }) => {
   };
 
   return (
-    <div style={{padding: '1rem'}}>s
+    <div style={{padding: '1rem'}} className='fade-in'>
       <div style={{
         maxWidth: '600px',
         margin: '1rem auto 2rem auto',

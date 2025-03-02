@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
-import './App.css';
-import LaunchesTable from './LaunchesTable';
+import './App.sass';
+import LaunchesTable from '../LaunchesTable/LaunchesTable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRocket } from '@fortawesome/free-solid-svg-icons';
-import LaunchStatusChart from './LaunchStatusChart';
-import SpaceXLogo from './SpaceXLogo';
-import Topbar from './Topbar';
-import MapComponent from './MapComponent';
-import { FavoritesProvider } from './FavoritesContext';
+import LaunchStatusChart from '../LaunchStatusChart';
+import SpaceXLogo from '../SpaceXLogo';
+import Topbar from '../Topbar';
+import MapComponent from '../MapComponent/MapComponent';
+import { FavoritesProvider } from '../FavoritesContext';
+import CountdownTimer from '../CountDownTimer';
 
 function App() {
 
@@ -35,6 +36,12 @@ function App() {
     latitude: number;
     longitude: number;
   }
+
+  interface Rocket {
+    id: string;
+    name: string;
+  }
+
   //estado para los lanzamientos
   const [launches, setLaunches] = useState<Launch[]>([]);
 
@@ -49,9 +56,12 @@ function App() {
 
   //estado para la plataforma del primer lanzamiento
   const [launchpadMap, setLaunchpadMap] = useState<Launchpad | null>(null);
+  
+  const [rocketMap, setRocketMap] = useState<Rocket | null>(null);
+
 
   useEffect(() => {
-    console.log('Solicitando lanzamientos');
+    //console.log('Solicitando lanzamientos');
     fetch('https://api.spacexdata.com/v4/launches')
       .then(response => response.json())
       .then(data => {
@@ -73,11 +83,16 @@ function App() {
   }, [firstLaunch])//obtenemos la plataforma de lanzamiento cuando tenemos el primer lanzamiento
 
   useEffect(() => {
+    const rocket:Rocket | null = getRocketFirstLaunch()
+    setRocketMap(rocket)
+  }, [firstLaunch])//obtenemos la plataforma de lanzamiento cuando tenemos el primer lanzamiento
+
+  useEffect(() => {
     fetch('https://api.spacexdata.com/v4/rockets')
       .then(response => response.json())
       .then(data => {
         setRockets(data);
-        console.log("Rockets: ", data);
+        //console.log("Rockets: ", data);
       })
       .catch(error => console.error('Error fetching data:', error));
   }, []);
@@ -88,43 +103,55 @@ function App() {
       .then(response => response.json())
       .then(data => {
         setLaunchpads(data);
-        console.log("Launchpads: ", data);
+        //console.log("Launchpads: ", data);
       })
       .catch(error => console.error('Error fetching data:', error));
   }, [launches]);
+
+  useEffect(()=>{
+    setTimeout(()=>{
+      setCanRender(true)
+    }, 2000)
+  })
 
   const getLaunchpadFromFirstLaunch = () => {
     if (!firstLaunch || !launchpads.length) return null;
     return launchpads.find((pad) => pad.id === firstLaunch.launchpad) ?? null; // Devuelve null si no se encuentra
   };
 
-  const launchpad = getLaunchpadFromFirstLaunch();
+  const getRocketFirstLaunch = () => {
+    if (!firstLaunch || !rockets.length) return null;
+    return rockets.find((rocket) => rocket.id === firstLaunch.rocket) ?? null; // Devuelve null si no se encuentra
+  };
+
+  //estado para activar el renderizado del grafico posterior a que se haya renderizado la tabla 
+  const [canRender, setCanRender] = useState(false);
 
   return (
     <FavoritesProvider>
       <div style={{
-        backgroundColor: 'rgb(5,9,22)',
+        backgroundColor: 'rgb(19, 25, 45)',
         height: '100%'
       }}>
-
-        <header >
-        </header>
         <main style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
           <Topbar launches={launches}/>
           <h1 style={{ color: 'rgb(89 154 255)' }}> Lanzamientos <FontAwesomeIcon icon={faRocket} /> </h1>
           <SpaceXLogo ></SpaceXLogo>
-          <p style={{ color: 'white', textAlign: 'center', maxWidth: '1000px', marginBottom: '20px' }}>
-            <strong style={{ color: 'rgb(89 154 255)' }}>Bienvenido</strong> a la aplicación de historial de lanzamientos de <strong style={{ color: 'rgb(89 154 255)' }}>SpaceX</strong>. Aquí podrás ver todos los lanzamientos de <strong style={{ color: 'rgb(89 154 255)' }}>SpaceX</strong> en forma de tabla.
-            Cada encabezado de la tabla te permitirá ordenar y filtrar la información para que puedas encontrar fácilmente los datos que buscas.
+
+          <p className='fade-in-2s description'>
+            <strong style={{ color: 'rgb(89 154 255)' }}>Bienvenido</strong> a la aplicación de historial de lanzamientos de <strong style={{ color: 'rgb(89 154 255)' }}>SpaceX</strong>. Aquí podrás ver todos los lanzamientos de <strong style={{ color: 'rgb(89 154 255)' }}>SpaceX</strong> <br />
+            Podrás ordenar y filtrar la información para que puedas encontrar fácilmente los datos que buscas. <br />
             ¡Explora y descubre más sobre las misiones espaciales de <strong style={{ color: 'rgb(89 154 255)' }}>SpaceX</strong>!
             <FontAwesomeIcon icon={faRocket} />
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: '80% 20%' }}>
-            <LaunchesTable launches={launches} rockets={rockets} launchpads={launchpads} onSelectRow={setFirstLaunch} />
-            <MapComponent launchpad={launchpadMap} launch={firstLaunch} />
-          </div>
+            {launches.length > 0 && (
+            <div style={{ display: 'grid', gridTemplateColumns: '80% 20%', position:'relative'  }}>
+              <LaunchesTable launches={launches} rockets={rockets} launchpads={launchpads} onSelectRow={setFirstLaunch}  />
+              <MapComponent launchpad={launchpadMap} launch={firstLaunch} rocket={rocketMap}/>
+            </div>
+            ) }
         </main>
-        <LaunchStatusChart launches={launches}></LaunchStatusChart>
+        { canRender && ( <LaunchStatusChart launches={launches}></LaunchStatusChart> ) }
       </div>
     </FavoritesProvider>
   );

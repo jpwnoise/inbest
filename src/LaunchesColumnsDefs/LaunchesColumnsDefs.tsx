@@ -2,7 +2,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GridColDef } from '@mui/x-data-grid';
 import { faCheck, faRocket, faTimes } from '@fortawesome/free-solid-svg-icons';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import AddLaunchFavorite from './AddLaunchFavorite';
+import AddLaunchFavorite from '../AddLaunchFavorite';
+import './LaunchesColumnsDefs.sass'
 
 export const launchesColumnsDefs = (rockets: any[], handleOpen: (rocket: any) => void, launchpads: any[]): GridColDef[] => {
     const searchRocketsById = (id: string) => {
@@ -41,14 +42,14 @@ export const launchesColumnsDefs = (rockets: any[], handleOpen: (rocket: any) =>
             renderCell: (params: any) => {
                 if (params.value) {
                     return (
-                        <div style={{ padding: '1rem', backgroundColor: 'rgb(69, 154, 56)', color: 'rgb(83, 224, 78)', display: 'flex', alignItems: 'center' }}>
+                        <div className='correct'>
                             <FontAwesomeIcon icon={faCheck} style={{ marginRight: '0.5rem' }} />
                             Si
                         </div>
                     );
                 } else {
                     return (
-                        <div style={{ padding: '1rem', backgroundColor: 'rgb(154, 56, 56)', color: 'rgb(224, 78, 78)', display: 'flex', alignItems: 'center' }}>
+                        <div className='incorrect'>
                             <FontAwesomeIcon icon={faTimes} style={{ marginRight: '0.5rem' }} />
                             No
                         </div>
@@ -56,7 +57,18 @@ export const launchesColumnsDefs = (rockets: any[], handleOpen: (rocket: any) =>
                 }
             },
         },
-        { field: 'details', headerName: 'Detalles', width: 200 },
+        { 
+            field: 'details', 
+            headerName: 'Detalles', 
+            width: 200,
+            renderCell: (params: any) => {
+                return (
+                    <div style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>
+                        {params.value}
+                    </div>
+                );
+            },
+        },
         {
             field: 'failures',
             headerName: 'Fallas',

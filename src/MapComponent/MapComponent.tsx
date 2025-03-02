@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css"; // Importa los estilos de Leaflet
 import L from "leaflet";
+import './Map.component.sass'
 
 // 🔹 Solucionar el problema de los íconos en Leaflet
 const markerIcon = new L.Icon({
@@ -28,9 +29,10 @@ const MapUpdater: React.FC<{ latitude: number; longitude: number }> = ({ latitud
 interface Location {
   launchpad: any;
   launch:any
+  rocket:any
 }
 
-const MapComponent: React.FC<Location> = ({ launchpad, launch }) => {
+const MapComponent: React.FC<Location> = ({ launchpad, launch, rocket }) => {
   if (!launchpad) {
     return <p>Cargando ubicación del lanzamiento...</p>; // Mensaje de carga
   }
@@ -56,37 +58,15 @@ const MapComponent: React.FC<Location> = ({ launchpad, launch }) => {
       </MapContainer>
 
       {/* 🔹 Datos sobre el lanzamiento */}
-      <div
-        style={{
-          position: "relative",
-          top: "-500px",
-          left:'40px',
-          zIndex: 400,
-          margin: "1rem",
-          backgroundColor: "rgba(0,0,0,.7)",
-          color: "rgb(190,190,190)",
-          padding: ".1rem",
-          fontSize:'small'
-        }}
-      >
+      <div className="highData">
         <p>
-          <strong>Nombre de lanzamiento:</strong> {launch.name} <br />
+          <strong>Nombre:</strong> {launch.name} <br/>
+          <strong>Tipo cohete:</strong> {rocket.name} <br/>
         </p>
       </div> 
 
       {/* 🔹 Datos sobre el lanzamiento */}
-      <div
-        style={{
-          position: "relative",
-          bottom: "200px",
-          zIndex: 400,
-          margin: "1rem",
-          backgroundColor: "rgba(0,0,0,.7)",
-          color: "rgb(190,190,190)",
-          padding: "1rem",
-          fontSize:'small'
-        }}
-      >
+      <div className="lowData"    >
         <p>
           <strong>Localidad:</strong> {launchpad.locality} <br />
           <strong>Nombre completo:</strong> {launchpad.full_name}

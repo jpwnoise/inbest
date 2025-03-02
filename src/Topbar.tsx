@@ -5,6 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import Badge from '@mui/material/Badge';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { useFavorites } from './FavoritesContext';
@@ -21,7 +22,7 @@ const Topbar: React.FC<TobarInterface> = ({ launches }) => {
         return launches.find(launch => launch.id === id);
     };
 
-    // Obtener la cantidad de lanzamientos favoritos
+    // Obtener la cantidad de lanzamientos favoritos    
     const getFavoriteLaunchesCount = () => {
         const favorites = JSON.parse(localStorage.getItem('favoriteLaunches') || '[]');
         return favorites.length;
@@ -56,10 +57,11 @@ const Topbar: React.FC<TobarInterface> = ({ launches }) => {
         borderRadius: 2,
     };
 
-    getFavoriteLaunches().map((element: any) => {
+    const { removeFavorite } = useFavorites();
 
-        console.log("elemento:", element);
-    })
+    function removeFavoriteLaunch(id: string): void {
+        removeFavorite(id);
+    }
 
     return (
         <>
@@ -97,7 +99,18 @@ const Topbar: React.FC<TobarInterface> = ({ launches }) => {
                             {getFavoriteLaunches().map((launch: any, index: number) => (
 
                                 <li key={index}>
-                                    <Typography>{launch.name}</Typography>
+                                    <Typography>Nombre: {launch.name}</Typography>
+                                    <Typography>Fecha: {launch.date_utc}</Typography>
+                                    <Typography>Éxito: {launch.success ? 'Sí' : 'No'}</Typography>
+                                    <IconButton
+                                        edge="end"
+                                        color="inherit"
+                                        aria-label="delete"
+                                        title="Eliminar lanzamiento"
+                                        onClick={() => removeFavoriteLaunch(launch.id)}
+                                    >
+                                        <DeleteIcon style={{ color: 'red' }} />
+                                    </IconButton>
                                 </li>
                             ))}
                         </ul>
