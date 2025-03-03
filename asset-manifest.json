@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/inbest/static/css/main.e24ceb11.css",
+    "main.js": "/inbest/static/js/main.afa505a6.js",
+    "static/js/453.c0b7837d.chunk.js": "/inbest/static/js/453.c0b7837d.chunk.js",
+    "index.html": "/inbest/index.html",
+    "main.e24ceb11.css.map": "/inbest/static/css/main.e24ceb11.css.map",
+    "main.afa505a6.js.map": "/inbest/static/js/main.afa505a6.js.map",
+    "453.c0b7837d.chunk.js.map": "/inbest/static/js/453.c0b7837d.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e24ceb11.css",
+    "static/js/main.afa505a6.js"
+  ]
+}
