@@ -10,6 +10,10 @@ import Topbar from '../Topbar';
 import MapComponent from '../MapComponent/MapComponent';
 import { FavoritesProvider } from '../FavoritesContext';
 import CountdownTimer from '../CountDownTimer';
+import { WelcomeMessage } from '../WelcomeMessage.component';
+import Select, { ActionMeta, SingleValue } from 'react-select';
+import { LaunchesCard } from '../LaunchesCard/LaunchesCard.component';
+
 
 function App() {
 
@@ -56,7 +60,7 @@ function App() {
 
   //estado para la plataforma del primer lanzamiento
   const [launchpadMap, setLaunchpadMap] = useState<Launchpad | null>(null);
-  
+
   const [rocketMap, setRocketMap] = useState<Rocket | null>(null);
 
 
@@ -65,6 +69,7 @@ function App() {
     fetch('https://api.spacexdata.com/v4/launches')
       .then(response => response.json())
       .then(data => {
+        console.log(data);
         setLaunches(data);
       })
       .catch(error => console.error('Error fetching data:', error));
@@ -83,7 +88,7 @@ function App() {
   }, [firstLaunch])//obtenemos la plataforma de lanzamiento cuando tenemos el primer lanzamiento
 
   useEffect(() => {
-    const rocket:Rocket | null = getRocketFirstLaunch()
+    const rocket: Rocket | null = getRocketFirstLaunch()
     setRocketMap(rocket)
   }, [firstLaunch])//obtenemos la plataforma de lanzamiento cuando tenemos el primer lanzamiento
 
@@ -108,8 +113,9 @@ function App() {
       .catch(error => console.error('Error fetching data:', error));
   }, [launches]);
 
-  useEffect(()=>{
-    setTimeout(()=>{
+  //solo para dar una secuencia de renderizado
+  useEffect(() => {
+    setTimeout(() => {
       setCanRender(true)
     }, 2000)
   })
@@ -127,6 +133,25 @@ function App() {
   //estado para activar el renderizado del grafico posterior a que se haya renderizado la tabla 
   const [canRender, setCanRender] = useState(false);
 
+  // Opciones para el Select
+  const options = [
+    { value: 'table', label: 'Tabla' },
+    { value: 'card', label: 'Tarjeta' },
+  ];
+
+  // Estado para manejar la selección
+  const [selectedOption, setSelectedOption] = useState<SingleValue<{ value: string; label: string }>>(null);
+
+  // Función para manejar el cambio de selección
+  const handleChange = (
+    newValue: SingleValue<{ value: string; label: string }>,
+    actionMeta: ActionMeta<{ value: string; label: string }>
+  ) => {
+    setSelectedOption(newValue);
+    console.log(`Opción seleccionada:`, newValue);
+  };
+
+
   return (
     <FavoritesProvider>
       <div style={{
@@ -134,27 +159,37 @@ function App() {
         height: '100%'
       }}>
         <main style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-          <Topbar launches={launches}/>
+          <Topbar launches={launches} />
           <h1 style={{ color: 'rgb(89 154 255)' }}> Lanzamientos <FontAwesomeIcon icon={faRocket} /> </h1>
           <SpaceXLogo ></SpaceXLogo>
-
-          <p className='fade-in-2s description'>
-            <strong style={{ color: 'rgb(89 154 255)' }}>Bienvenido</strong> a la aplicación de historial de lanzamientos de <strong style={{ color: 'rgb(89 154 255)' }}>SpaceX</strong>. Aquí podrás ver todos los lanzamientos de <strong style={{ color: 'rgb(89 154 255)' }}>SpaceX</strong> <br />
-            Podrás ordenar y filtrar la información para que puedas encontrar fácilmente los datos que buscas. <br />
-            ¡Explora y descubre más sobre las misiones espaciales de <strong style={{ color: 'rgb(89 154 255)' }}>SpaceX</strong>!
-            <FontAwesomeIcon icon={faRocket} />
-          </p>
-            {launches.length > 0 && (
-            <div style={{ display: 'grid', gridTemplateColumns: '80% 20%', position:'relative'  }}>
-              <LaunchesTable launches={launches} rockets={rockets} launchpads={launchpads} onSelectRow={setFirstLaunch}  />
-              <MapComponent launchpad={launchpadMap} launch={firstLaunch} rocket={rocketMap}/>
+          <WelcomeMessage />
+          <div className='select'>
+            <p>Elijo ver los datos en formato: </p>
+            <Select
+              options={options}
+              value={selectedOption}
+              onChange={handleChange}
+              placeholder="Selecciona una opción"
+              isClearable
+              isSearchable
+            />
+          </div>
+          {launches.length > 0 && selectedOption?.value === 'table' && (
+            <div style={{ display: 'grid', gridTemplateColumns: '80% 20%', position: 'relative' }}>
+              <LaunchesTable launches={launches} rockets={rockets} launchpads={launchpads} onSelectRow={setFirstLaunch} />
+              <MapComponent launchpad={launchpadMap} launch={firstLaunch} rocket={rocketMap} />
             </div>
-            ) }
+          )}
+          { launches.length > 0 && 
+            selectedOption?.value === 'card' && 
+            (<LaunchesCard launches={launches} launchIndex={0}  />) 
+            }
         </main>
-        { canRender && ( <LaunchStatusChart launches={launches}></LaunchStatusChart> ) }
+        {canRender && (<LaunchStatusChart launches={launches}></LaunchStatusChart>)}
       </div>
     </FavoritesProvider>
   );
 }
 
 export default App;
+ 
